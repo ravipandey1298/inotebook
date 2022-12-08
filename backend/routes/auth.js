@@ -2,6 +2,11 @@ const express = require('express');
 const User = require('../models/User');
 const router = express.Router()
 const { body, validationResult } = require('express-validator');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+
+// Create a Secret key to Verify Signature (JWT)
+const JWT_SECRET = 'HeyThisIsMyOrganization' 
 
 // Create a User using: POST "/api/auth/createUser". Doesn't require Auth
 // In [] we define our body validation.
@@ -26,13 +31,29 @@ router.post('/createUser', [
     if(user){
         return res.status(400).json({errors : "EmailId id already exist."})
     }
+
+    // We are adding auto generated salt into our password.(This is async call)
+    const salt = await bcrypt.genSalt(10);
+    // We encrypted the password using hash alogorithm and create a hash of password + salt.(This is async call)
+    const securePassword = await bcrypt.hash(req.body.password, salt);
+
     // We Create USER and save it to data base. We are using promisse here .We can use async await instead of .then 
     user = await User.create({
         name: req.body.name,
         email: req.body.email,
-        password: req.body.password,
+        password: securePassword,
       })
-      res.json(user);
+
+      const data ={
+        user:{
+            id : user.id
+        }
+      }
+
+      const authToken = jwt.sign(data, JWT_SECRET)
+
+      res.json({authToken})
+
     }catch(error){
         console.error(error);
         res.status(500).json({errors : "Some error occurred"})
