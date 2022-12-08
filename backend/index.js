@@ -5,8 +5,10 @@ connectToMongo();
 
 
 const app = express()
-const port = 3000
+// our application is running on port 5000. Because our React Application in also running on 3000
+const port = 5000
 
+// A Middleware is use to accept json.
 app.use(express.json())
 
 // Available Routes

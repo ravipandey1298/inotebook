@@ -22,6 +22,4 @@ const userSchema = new Schema({
   });
 
   const User = mongoose.model('user', userSchema)
-  // Using this we can create index in our Database if we did not want any index in our application we don't have to use this createIndexes();
-  User.createIndexes();
   module.exports = User;
