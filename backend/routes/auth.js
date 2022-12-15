@@ -4,11 +4,12 @@ const router = express.Router();
 const { body, validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const fetchUser = require("../middleware/fetchUser");
 
 // Create a Secret key to Verify Signature (JWT)
 const JWT_SECRET = "HeyThisIsMyOrganization";
 
-// Create a User using: POST "/api/auth/createUser". Doesn't require Auth
+// ROUTE 1: Create a User using: POST "/api/auth/createUser". Doesn't require Auth
 // In [] we define our body validation.
 router.post(
   "/createUser",
@@ -68,7 +69,7 @@ router.post(
   }
 );
 
-// Login a User using: POST "/api/auth/login". Doesn't require Auth
+// ROUTE 2: Authenticate a User using: POST "/api/auth/login". Doesn't require Auth
 // In [] we define our body validation.
 router.post(
   "/login",
@@ -83,35 +84,55 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const {email, password} = req.body
+    const { email, password } = req.body;
     try {
-      const user = await User.findOne({email});
+      const user = await User.findOne({ email });
       //If user email is not present in the database is will return response with BAD request 400.
       if (!user) {
-        return res.status(400).json({ errors: "Please try to login with correct credentials." });
+        return res
+          .status(400)
+          .json({ errors: "Please try to login with correct credentials." });
       }
 
       // Comparing both passsword provided by user and database password -> return true, false and it is PROMISE. For resolve this use await
       const passwordCompare = await bcrypt.compare(password, user.password);
-      if(!passwordCompare){
-        return res.status(400).json({ errors: "Please try to login with correct credentials." });
+      if (!passwordCompare) {
+        return res
+          .status(400)
+          .json({ errors: "Please try to login with correct credentials." });
       }
 
-    //   Creating data for sending in authToken
+      //   Creating data for sending in authToken
       const Data = {
-        user:{
-            id : user.id
-        }
-      }
+        user: {
+          id: user.id,
+        },
+      };
 
       // Signing the AuthToken
       const authToken = jwt.sign(Data, JWT_SECRET);
       //Sending AuthToken in response is user verified and loggedIn sucessfully.
-      res.json({authToken})
-
+      res.json({ authToken });
     } catch (error) {
-        console.log(error);
-        res.status(500).json({"error" : "Internal Server error"})
+      console.log(error);
+      res.status(500).json({ error: "Internal Server error" });
+    }
+  }
+);
+
+// ROUTE 2: Authenticate a User using: POST "/api/auth/getuser". Doesn't require Auth
+// We are using fetchUser it is type of middleware to verify user and know that who is logged in. 
+router.post("/getuser", fetchUser, async (req, res) => {
+
+    try{
+        userId = req.user.id;
+        // find the user based on ID which comes into jwt token and using select method that will help us to skip that data from DB.
+        // we can select multiple like { select("-password, -email") }
+        const user = await User.findById(userId).select("-password")
+        res.send(user)
+    }catch(error){
+        console.log(error.message)
+        res.status(500).send("Internal Server Error")
     }
   }
 );
