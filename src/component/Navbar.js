@@ -1,12 +1,18 @@
-import React from "react";
-import {Link} from "react-router-dom";
+import React, { useEffect } from "react";
+import {Link, useLocation} from "react-router-dom";
 
 const Navbar = () => {
+
+  // Use location is hook that help to find the location path details which url path is selected.
+  const location = useLocation();
+  useEffect(() => {
+    // console.log(location.pathname)
+  }, [location])
   return (
     <nav className="navbar navbar-expand-lg bg-light">
       <div className="container-fluid">
         <Link className="navbar-brand" to="/">
-          Navbar
+          iNotebook
         </Link>
         <button
           className="navbar-toggler"
@@ -22,12 +28,14 @@ const Navbar = () => {
         <div className="collapse navbar-collapse" id="navbarSupportedContent">
           <ul className="navbar-nav me-auto mb-2 mb-lg-0">
             <li className="nav-item">
-              <Link className="nav-link active" aria-current="page" to="/">
+              {/* If Location path is "/" then the HOME should be active */}
+              <Link className={`nav-link ${location.pathname === "/" ? "active" : ""}`} aria-current="page" to="/">
                 Home
               </Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/about">
+              {/* If Location path is "/about" then the About should be active */}
+              <Link className={`nav-link ${location.pathname === "/about" ? "active" : ""}`} to="/about">
                 About
               </Link>
             </li>
