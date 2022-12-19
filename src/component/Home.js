@@ -1,6 +1,11 @@
-import React from "react";
+import React, { useContext } from "react";
+import noteContext from "../context/notes/noteContext";
 
 const Home = () => {
+  // Taking the value from contest using useContext hook.
+  const context = useContext(noteContext);
+  // Destructring the value of notes and setNotes from context.
+  const {notes, setNotes} = context;
   return (
     <div className = "my-3">
       <h2>Add your note here : </h2>
@@ -44,6 +49,10 @@ const Home = () => {
 
       <div className="container my-2">
         <h2>Your Note : </h2>
+        {/* iterating the note from all the notes. */}
+        {notes.map((note)=> {
+          return note.title
+        })}
       </div>
     </div>
   );
