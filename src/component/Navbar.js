@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import {Link, useLocation} from "react-router-dom";
 
+
 const Navbar = () => {
 
   // Use location is hook that help to find the location path details which url path is selected.
