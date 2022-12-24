@@ -35,17 +35,15 @@ const NoteState = (props) => {
       },
       body: JSON.stringify({title, description, tag}), // body data type must match "Content-Type" header
     });
-
-
-
+    const json = await response.json();
     const note = {
-      _id: "63a01be0323ab33283ca226b",
-      user: "6391c3ac21213aa728e4f467",
-      title: title,
-      description: description,
-      tag: tag,
-      date: "2022-12-19T08:08:00.005Z",
-      __v: 0,
+      _id: json._id,
+      user: json.user,
+      title: json.title,
+      description: json.description,
+      tag: json.tag,
+      date: json.date,
+      __v: json.__v,
     };
 
     setNotes(notes.concat(note));
@@ -65,7 +63,7 @@ const NoteState = (props) => {
     });
     // console.log("The note id is : " + id)
     const newNote = notes.filter((note) => {
-      return note._id != id;
+      return note._id !== id;
     });
     setNotes(newNote);
   };
@@ -78,22 +76,28 @@ const NoteState = (props) => {
       method: "PUT", // *GET, POST, PUT, DELETE, etc.
       headers: {
         "Content-Type": "application/json",
-        "auth-token":
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.   eyJ1c2VyIjp7ImlkIjoiNjM5MWMzYWMyMTIxM2FhNzI4ZTRmNDY3In0sImlhdCI6MTY3MDkxOTA0M30.yNC2dGYkwlMMegJKLqiUXFH7l0af8PP2k_KWxpfDm_4",
+        "auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjM5MWMzYWMyMTIxM2FhNzI4ZTRmNDY3In0sImlhdCI6MTY3MDkxOTA0M30.yNC2dGYkwlMMegJKLqiUXFH7l0af8PP2k_KWxpfDm_4"
       },
-      body: JSON.stringify({title, description, tag}), // body data type must match "Content-Type" header
+      body: JSON.stringify({title, description, tag}) // body data type must match "Content-Type" header
     });
 
+    const json = await response.json();
+    console.log(json);
+
     // Logic to edit client..
-    for (let index = 0; index < notes.length; index++) {
-      const element = notes[index];
+    let newNotes = JSON.parse(JSON.stringify(notes))
+    // Logic to edit in client
+    for (let index = 0; index < newNotes.length; index++) {
+      const element = newNotes[index];
       if (element._id === id) {
-        element.title = title;
-        element.description = description;
-        element.tag = tag;
+        newNotes[index].title = title;
+        newNotes[index].description = description;
+        newNotes[index].tag = tag; 
+        break; 
       }
-    }
-  };
+    }  
+    setNotes(newNotes);
+  }
 
   return (
     <NoteContext.Provider value={{ notes, addNote, deleteNote, editNote, getNotes}}>
