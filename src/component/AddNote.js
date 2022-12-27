@@ -11,6 +11,7 @@ const AddNote = () => {
         // use to prevent reloading the page.
         e.preventDefault();
         addNote(note.title, note.description, note.tag)
+        setNote({title:'', description:'', tag:''});
     }
 
     // handels when some text is change in text boxes
@@ -36,6 +37,9 @@ const AddNote = () => {
             name="title"
             aria-describedby="emailHelp"
             onChange={onChange}
+            min={5}
+            required
+            value={note.title}
           />
         </div>
         <div className="mb-3">
@@ -48,6 +52,9 @@ const AddNote = () => {
             id="description"
             name="description"
             onChange={onChange}
+            min={5}
+            required
+            value={note.description}
           />
         </div>
         <div className="mb-3">
@@ -60,9 +67,12 @@ const AddNote = () => {
             id="tag"
             name="tag"
             onChange={onChange}
+            min={5}
+            required
+            value={note.tag}
           />
         </div>      
-        <button type="submit" className="btn btn-primary" onClick={handelclick}>
+        <button disabled={note.title.length<5 || note.description.length<5} type="submit" className="btn btn-primary" onClick={handelclick}>
           Submit
         </button>
       </form>
