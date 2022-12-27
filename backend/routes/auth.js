@@ -6,6 +6,8 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const fetchUser = require("../middleware/fetchUser");
 
+
+
 // Create a Secret key to Verify Signature (JWT)
 const JWT_SECRET = "HeyThisIsMyOrganization";
 
@@ -21,20 +23,21 @@ router.post(
     }),
   ],
   async (req, res) => {
+    let success = false; 
     // Adding the code into try and catch block. if some other error occured our application not crashed in that situation.
 
     try {
       // If any error in validation it return bad request 400
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
+        return res.status(400).json({success, errors: errors.array() });
       }
       // Here we are finding email is present for users or not. If any user if present in the dataBase with this same email it will give that user back.
       let user = await User.findOne({ email: req.body.email });
 
       //If user email is already present in the database is will return response with BAD request 400.
       if (user) {
-        return res.status(400).json({ errors: "EmailId id already exist." });
+        return res.status(400).json({success, errors: "EmailId id already exist." });
       }
 
       // We are adding auto generated salt into our password.(This is async call)
@@ -56,11 +59,12 @@ router.post(
       };
 
       const authToken = jwt.sign(data, JWT_SECRET);
-
-      res.json({ authToken });
+      success = true
+      res.json({success, authToken });
     } catch (error) {
+      success = false
       console.error(error);
-      res.status(500).json({ errors: "Some error occurred" });
+      res.status(500).json({success, errors: "Some error occurred" });
     }
 
     //   .then(user => res.json(user))
@@ -78,10 +82,11 @@ router.post(
     body("password", "Password must be atleast 5 chracters").exists(),
   ],
   async (req, res) => {
+    let success = false; 
     // If any error in validation it return bad request 400
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      return res.status(400).json({success, errors: errors.array() });
     }
 
     const { email, password } = req.body;
@@ -91,7 +96,7 @@ router.post(
       if (!user) {
         return res
           .status(400)
-          .json({ errors: "Please try to login with correct credentials." });
+          .json({ success, errors: "Please try to login with correct credentials." });
       }
 
       // Comparing both passsword provided by user and database password -> return true, false and it is PROMISE. For resolve this use await
@@ -99,7 +104,7 @@ router.post(
       if (!passwordCompare) {
         return res
           .status(400)
-          .json({ errors: "Please try to login with correct credentials." });
+          .json({success, errors: "Please try to login with correct credentials." });
       }
 
       //   Creating data for sending in authToken
@@ -112,10 +117,12 @@ router.post(
       // Signing the AuthToken
       const authToken = jwt.sign(Data, JWT_SECRET);
       //Sending AuthToken in response is user verified and loggedIn sucessfully.
-      res.json({ authToken });
+      success = true
+      res.json({success, authToken });
     } catch (error) {
       console.log(error);
-      res.status(500).json({ error: "Internal Server error" });
+      success = false;
+      res.status(500).json({success, error: "Internal Server error" });
     }
   }
 );
