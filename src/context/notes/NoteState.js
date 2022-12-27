@@ -12,8 +12,6 @@ const NoteState = (props) => {
       method: "GET", // *GET, POST, PUT, DELETE, etc.
       headers: {
         "Content-Type": "application/json",
-        "auth-token":
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjM5MWMzYWMyMTIxM2FhNzI4ZTRmNDY3In0sImlhdCI6MTY3MDkxOTA0M30.yNC2dGYkwlMMegJKLqiUXFH7l0af8PP2k_KWxpfDm_4"
       }
     });
     const json = await response.json();
@@ -30,13 +28,13 @@ const NoteState = (props) => {
       method: "POST", // *GET, POST, PUT, DELETE, etc.
       headers: {
         "Content-Type": "application/json",
-        "auth-token":
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjM5MWMzYWMyMTIxM2FhNzI4ZTRmNDY3In0sImlhdCI6MTY3MDkxOTA0M30.yNC2dGYkwlMMegJKLqiUXFH7l0af8PP2k_KWxpfDm_4"
+        "auth-token": localStorage.getItem('token')
       },
       body: JSON.stringify({title, description, tag}), // body data type must match "Content-Type" header
     });
     const json = await response.json();
     setNotes(notes.concat(json))
+
   };
 
   // Delete Note
@@ -47,11 +45,11 @@ const NoteState = (props) => {
       method: "DELETE", // *GET, POST, PUT, DELETE, etc.
       headers: {
         "Content-Type": "application/json",
-        "auth-token":
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjM5MWMzYWMyMTIxM2FhNzI4ZTRmNDY3In0sImlhdCI6MTY3MDkxOTA0M30.yNC2dGYkwlMMegJKLqiUXFH7l0af8PP2k_KWxpfDm_4"
+        "auth-token": localStorage.getItem('token')
       }
     });
     // console.log("The note id is : " + id)
+    await response.json();
     const newNote = notes.filter((note) => {
       return note._id !== id;
     });
@@ -66,7 +64,7 @@ const NoteState = (props) => {
       method: "PUT", // *GET, POST, PUT, DELETE, etc.
       headers: {
         "Content-Type": "application/json",
-        "auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjM5MWMzYWMyMTIxM2FhNzI4ZTRmNDY3In0sImlhdCI6MTY3MDkxOTA0M30.yNC2dGYkwlMMegJKLqiUXFH7l0af8PP2k_KWxpfDm_4"
+        "auth-token": localStorage.getItem('token') 
       },
       body: JSON.stringify({title, description, tag}) // body data type must match "Content-Type" header
     });

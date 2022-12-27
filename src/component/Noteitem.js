@@ -13,7 +13,8 @@ const Noteitem = (props) => {
           <div className="d-flex align-item-center">
             <h5 className="card-title">{note.title}</h5>
             {/* Delete icon form fontawsome.com */}
-            <i className="fa-solid fa-trash mx-2" onClick={()=>{deleteNote(note._id)}}></i>
+            <i className="fa-solid fa-trash mx-2" onClick={()=>{deleteNote(note._id);
+            props.showAlert("Deleted Successfully!", "success")}}></i>
             {/* Edit icon form fontawsome.com */}
             <i className="fa-solid fa-file-pen mx-2" onClick={()=>{updateNote(note)}}></i>
           </div>

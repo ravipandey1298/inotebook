@@ -2,9 +2,12 @@ import React, { useContext, useEffect, useState, useRef } from "react";
 import noteContext from "../context/notes/noteContext";
 import Noteitem from "./Noteitem";
 import AddNote from "./AddNote";
+import { useNavigate } from "react-router-dom";
 
 // A note component to show all the notes on UI
-const Notes = () => {
+const Notes = (props) => {
+  let history = useNavigate();
+  const {showAlert} = props;
   // Taking the value from contest using useContext hook.
   const context = useContext(noteContext);
   // Destructring the value of notes and setNotes from context.
@@ -17,7 +20,11 @@ const Notes = () => {
   });
 
   useEffect(() => {
-    getNotes();
+    if(localStorage.getItem('token')){
+      getNotes();
+    }else{
+      history('/login')
+    }
     // eslint-disable-next-line
   }, []);
 
@@ -36,9 +43,9 @@ const Notes = () => {
 
   const handelclick = (e) => {
     e.preventDefault();
-    console.log("note is  updated ..." + note);
     editNote(note.id, note.etitle, note.edescription, note.etag);
     refClose.current.click();
+    props.showAlert('Updated Successfully!', 'success')
   };
 
   // handels when some text is change in text boxes
@@ -48,7 +55,7 @@ const Notes = () => {
 
   return (
     <>
-      <AddNote />
+      <AddNote showAlert={showAlert}/>
 
       <button
         type="button"
@@ -159,7 +166,7 @@ const Notes = () => {
         </div>
         {notes.map((note) => {
           return (
-            <Noteitem key={note._id} updateNote={updateNote} note={note} />
+            <Noteitem key={note._id} updateNote={updateNote} showAlert={showAlert} note={note} />
           );
         })}     
       </div>
